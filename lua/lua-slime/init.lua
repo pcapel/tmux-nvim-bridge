@@ -3,7 +3,7 @@ local system = vim.fn.system
 
 -- Utility function for chaining system calls with a pipeline operator
 local function pipeline(commands)
-  full_command = commands[1]
+  local full_command = commands[1]
   for i=2, #(commands) do
     full_command = full_command .. ' | ' .. commands[i]
   end
@@ -27,7 +27,7 @@ local function active_target()
     'tr , "\n"',
   }
 
-  result = arr_line(system(pipeline(CMD_ACTIVE_TARGET)))
+  local result = arr_line(system(pipeline(CMD_ACTIVE_TARGET)))
 
   return {
     session_name = result[1],
@@ -44,13 +44,13 @@ local function tmux_windows()
   end
 end
 
-local function send_key_to_tmux(key, tmux_target)
-  if not vim.fn.exists('g:tslime') then
-    tmux_vars()
-  end
+-- local function send_key_to_tmux(key, tmux_target)
+--   if not vim.fn.exists('g:tslime') then
+--     tmux_vars()
+--   end
 
-  local res = vim.cmd(':call system("tmux send-keys -t ' .. tmux_target .. key .. '")')
-end
+--   local res = vim.cmd(':call system("tmux send-keys -t ' .. tmux_target .. key .. '")')
+-- end
 
 
 local function run_test()
