@@ -7,14 +7,6 @@
 local utils = require('lua-slime.utils')
 local vfn = vim.fn
 
-local function as_str_array(array)
-  local options = '['
-  for i=1, #(array) do
-    options = options .. '"' .. array[i] .. '"' .. ','
-  end
-  return options .. ']'
-end
-
 -- returns a table with the values
 -- session_name: the current tmux session
 -- window_index: the currently active window index
@@ -57,7 +49,7 @@ end
 
 local function get_input_options(value_label, options)
   -- TODO: figure out a better way to do this
-  vim.cmd("function! Options(A,L,P)\n" .. "return " .. as_str_array(options) .. "\nendfunction")
+  vim.cmd("function! Options(A,L,P)\n" .. "return " .. utils.as_str_array(options) .. "\nendfunction")
 
   local user_input = ''
   while user_input == '' do
@@ -79,6 +71,28 @@ local function send_to_tmux(keys)
   vfn.system('tmux send-keys -t ' .. tmux_target() .. ' ' .. keys)
 end
 
+local function update_stored_session()
+  local session_names = tmux_sessions()
+  if #(session_names) == 1 then
+    vim.g.tmux_send_info = utils.replace(vim.g.tmux_send_info, 'session', session_names[1])
+  else
+    vim.g.tmux_send_info = utils.replace(vim.g.tmux_send_info, 'session', get_session_name(session_names))
+  end
+  return vim.g.tmux_send_info['session']
+end
+
+local function update_stored_window(current_session)
+  local window_names = tmux_windows(current_session)
+
+  local window = nil
+  if #(window_names) == 1 then
+    window = windows[1]
+  else
+    window = get_window_name(window_names)
+  end
+  return vim.fn.substitute(window, ":.*$", '', 'g')
+end
+
 -- the tslime.vim expected variables are:
 -- g:tslime ->
 --  session: a session name for a tmux session
@@ -96,21 +110,23 @@ end
 -- Names matter.
 -- Something like tmux-send.vim
 -- There are a ton of ports of this out there, probably because it's fairly easy to put together.
-local function reset_tslime()
-  local session_names = tmux_sessions()
+local function reset_tmux_send_info()
   vim.g.tmux_send_info = {}
-  if #(session_names) == 1 then
-    vim.g.tmux_send_info['session'] = session_names[1]
-  else
-    vim.g.tmux_send_info['session'] = get_session_name(session_names)
+  update_stored_pane(
+    update_stored_window(
+      update_stored_session()
+    )
+  )
+  for key, value in pairs(vim.g.tmux_send_info) do
+    print(key, value)
   end
 end
 
 local function run_test()
-  reset_tslime()
+  reset_tmux_send_info()
 end
 
 return {
   run_test = run_test,
-  reset_tslime = reset_tslime
+  reset_tmux_send_info = reset_tmux_send_info
 }

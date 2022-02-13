@@ -7,7 +7,11 @@ However, along the way I do think that it would be nice to improve the
 ergonomics of the slime interface.
 
 The first thing that comes to mind is exposing an easier way to switch up the
-target session/window/pane.
+target session/window/pane. While we _can_ reset them the way the code is
+originally written, you have to reset all of them. So if you just want to
+target a new pane or something, you're stuck reiterating the info you already
+put in. If that's a part of your workflow, it's not nice. I'd like a way to
+expose just changing each individual element.
 
 ## tslime.vim
 This is a simple vim script to send portion of text from a vim buffer to a
