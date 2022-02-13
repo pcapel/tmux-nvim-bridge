@@ -35,7 +35,7 @@ local function tmux_windows(session)
   if vim.g.tslime_always_current_window then
     return active_session_info().window_index
   else
-    return utils.arr_line(vfn.system('tmux list-windows -F "#{window_index}" -t ' .. session))
+    return utils.arr_line(vfn.system(stirng.format('tmux list-windows -F "#{window_index}" -t %s', session)))
   end
 end
 
@@ -47,9 +47,11 @@ local function tmux_sessions()
   end
 end
 
+OPTIONS = "function! Options(A,L,P)\nreturn %s\nendfunction"
+
 local function get_input_options(value_label, options)
   -- TODO: figure out a better way to do this
-  vim.cmd("function! Options(A,L,P)\n" .. "return " .. utils.as_str_array(options) .. "\nendfunction")
+  vim.cmd(string.format(OPTIONS, utils.as_str_array(options)))
 
   local user_input = ''
   while user_input == '' do
@@ -68,7 +70,7 @@ end
 
 -- need to sort out what type keys is
 local function send_to_tmux(keys)
-  vfn.system('tmux send-keys -t ' .. tmux_target() .. ' ' .. keys)
+  vfn.system(string.format('tmux send-keys -t %s %s', tmux_target(), keys))
 end
 
 local function update_stored_session()
@@ -93,23 +95,6 @@ local function update_stored_window(current_session)
   return vim.fn.substitute(window, ":.*$", '', 'g')
 end
 
--- the tslime.vim expected variables are:
--- g:tslime ->
---  session: a session name for a tmux session
---  window: a window name for a given tmux session
---  pane: a pane number for a given session and window
---
--- I believe that it would make sense to expose some way to inject context
--- here. For example, if the tslime vars are being set to be read from a
--- specific plugin, it would be nice to know why they are being prompted from
--- the user. So then there should be a default message, a message that the
--- person sends in, and a variable that allows for suppressing both.
---
--- Also, I would like to rename this. Slime is a deep-cut so to speak. The
--- relationship to what this is and does is tenuous at best at this point.
--- Names matter.
--- Something like tmux-send.vim
--- There are a ton of ports of this out there, probably because it's fairly easy to put together.
 local function reset_tmux_send_info()
   vim.g.tmux_send_info = {}
   update_stored_pane(
@@ -123,10 +108,15 @@ local function reset_tmux_send_info()
 end
 
 local function run_test()
+  vim.g.always_current_window
   reset_tmux_send_info()
 end
 
 return {
   run_test = run_test,
-  reset_tmux_send_info = reset_tmux_send_info
+  reset_tmux_send_info = reset_tmux_send_info,
+  updated_stored_session = update_stored_session,
+  updated_stored_window = update_stored_window,
+  updated_stored_pane = update_stored_pane,
+
 }

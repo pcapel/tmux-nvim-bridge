@@ -15,9 +15,10 @@ M.arr_line = function(string)
 end
 
 M.as_str_array = function(array)
+  element = '%q,'
   local options = '['
   for i=1, #(array) do
-    options = options .. '"' .. array[i] .. '"' .. ','
+    options = options .. string.format(element, array[i])
   end
   return options .. ']'
 end
