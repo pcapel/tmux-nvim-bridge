@@ -1,8 +1,8 @@
-local M = {}
+local inputs = {}
 
 -- from:
 -- https://github.com/Iron-E/nvim-libmodal/blob/afe38ffc20b8d28a5436d9b36bf9570e878d0d3a/lua/libmodal/src/Prompt.lua
-M.createCompletionsProvider = function(completions)
+inputs.createCompletionsProvider = function(completions)
   return function(argLead, cmdLine, _)
     if string.len(cmdLine) < 1 then return completions
     end
@@ -25,11 +25,11 @@ local function get_input_options(label, options)
   return user_input
 end
 
-M.get_session_name = function(names)
+inputs.get_session_name = function(names)
   return get_input_options('session name: ', names)
 end
 
-M.get_window_name = function(names)
+inputs.get_window_name = function(names)
   return get_input_options('window name: ', names)
 end
 

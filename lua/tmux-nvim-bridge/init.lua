@@ -2,6 +2,13 @@ local utils = require('tmux-nvim-bridge.utils')
 local tmux = require('tmux-nvim-bridge.tmux')
 local inputs = require('tmux-nvim-bridge.inputs')
 
+local Plugin = {}
+local defaultConfig = {}
+
+Plugin.setup = function(options)
+  Plugin.config = vim.tbl_deep_extend('force', defaultConfig, options or {})
+end
+
 local function update_session(new_value)
   vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'session', new_value)
 end

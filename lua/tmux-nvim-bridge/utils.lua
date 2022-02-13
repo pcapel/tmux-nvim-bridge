@@ -1,7 +1,7 @@
-local M = {}
+local utils = {}
 
 -- Utility function for chaining system calls with a pipeline operator
-M.pipeline = function(commands)
+utils.pipeline = function(commands)
   local full_command = commands[1]
   for i=2, #(commands) do
     full_command = full_command .. ' | ' .. commands[i]
@@ -10,11 +10,11 @@ M.pipeline = function(commands)
   return full_command
 end
 
-M.arr_line = function(string)
+utils.arr_line = function(string)
   return vim.fn.split(string, '\n')
 end
 
-M.as_str_array = function(array)
+utils.as_str_array = function(array)
   local element = '%q,'
   local options = '['
   for i=1, #(array) do
@@ -23,7 +23,7 @@ M.as_str_array = function(array)
   return options .. ']'
 end
 
-M.replace = function(table, key, value)
+utils.replace = function(table, key, value)
   local new_table = {}
   for label, entry in pairs(table) do
     if label == key then
@@ -38,10 +38,10 @@ M.replace = function(table, key, value)
   return new_table
 end
 
-M.pretty_print = function(...)
+utils.pretty_print = function(...)
   for i = 1, select('#', ...) do
     print(vim.inspect(select(i, ...)))
   end
 end
 
-return M
+return utils
