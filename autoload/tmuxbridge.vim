@@ -10,5 +10,3 @@ function! tmuxbridge#_inputWith(indicator, completions)
 
 	return input(a:indicator, '', 'customlist,TmuxBridgeCompletionsProvider')
 endfunction
-
-echo "autoload loaded"

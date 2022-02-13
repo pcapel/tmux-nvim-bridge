@@ -1,6 +1,3 @@
--- Questions About Plugin Development
--- 1. Why use the vim.g var everywhere? Is it just because there is no concept
--- of state? Is that why the yode source uses a weird redux analog?
 local utils = require('tmux-nvim-bridge.utils')
 local tmux = require('tmux-nvim-bridge.interactors')
 local inputs = require('tmux-nvim-bridge.inputs')
