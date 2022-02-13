@@ -1,4 +1,4 @@
-local utils = require('lua-slime.utils')
+local utils = require('tmux-nvim-bridge.utils')
 
 describe('pipeline', function()
   it('puts strings together like pipe commands for terminals', function()

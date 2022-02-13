@@ -1,5 +1,5 @@
-# Lua Slime
-Tslime, but ported to lua.
+# Bridge Neovim buffers to Tmux
+This is just tslime.vim, but ported to lua.
 
 ## Goals
 The primary goal of this project is to learn how to develop a plugin in Lua.
@@ -26,4 +26,11 @@ Note: If you use version of tmux earlier than 1.3, you should use the stable
 branch. The version available in that branch isn't aware of panes so it will
 paste to pane 0 of the window.
 
+# Attributions
+I would not have been able to build this out without the code written by the
+following awesome developers:
 
+https://github.com/Iron-E
+https://github.com/David-Kunz
+https://github.com/jgdavey
+https://github.com/hoschi

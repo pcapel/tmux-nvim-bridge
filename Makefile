@@ -2,7 +2,7 @@ lint:
 	luacheck lua
 
 test:
-	nvim --headless -c "PlenaryBustedDirectory lua/lua-slime/tests/ {minimal_init = 'lua/lua-slime/tests/minimal.vim'}"
+	nvim --headless -c "PlenaryBustedDirectory lua/tmux-nvim-bridge/tests/ {minimal_init = 'lua/tmux-nvim-bridge/tests/minimal.vim'}"
 
 format:
-	stylua lua/lua-slime/*.lua lua/lua-slime/layout/*.lua lua/lua-slime/redux/*.lua lua/lua-slime/tests/*/*.lua
+	stylua lua/tmux-nvim-bridge/*.lua lua/tmux-nvim-bridge/layout/*.lua lua/tmux-nvim-bridge/redux/*.lua lua/tmux-nvim-bridge/tests/*/*.lua
