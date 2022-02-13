@@ -3,6 +3,11 @@ local tmux = require('tmux-nvim-bridge.tmux')
 local inputs = require('tmux-nvim-bridge.inputs')
 
 local Plugin = {}
+-- TODO: Figure out how the configuration should work.
+-- Do you just set those values up on the global scope?
+-- Is it better to introduce a way to pass them all around
+-- as arguments?
+-- I dunno
 local defaultConfig = {}
 
 Plugin.setup = function(options)
@@ -13,7 +18,10 @@ local function update_session(new_value)
   vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'session', new_value)
 end
 
-local function update_stored_session()
+-- Exposed API
+
+-- TODO: name this better
+Plugin.update_stored_session = function()
   local session_names = tmux.sessions()
   if #(session_names) == 1 then
     update_session(session_names[1])
@@ -23,7 +31,7 @@ local function update_stored_session()
   return vim.g.tmux_bridge_info.session
 end
 
-local function update_stored_window(current_session)
+Plugin.update_stored_window = function(current_session)
   local window_names = tmux.windows(current_session)
   local window = #(window_names) == 1 and window_names[1] or inputs.get_window_name(window_names)
   local new_window = vim.fn.substitute(window, ":.*$", '', 'g')
@@ -33,10 +41,10 @@ local function update_stored_window(current_session)
   return vim.g.tmux_bridge_info.window
 end
 
-local function update_stored_pane()
+Plugin.update_stored_pane = function()
 end
 
-local function reset_tmux_bridge_info()
+Plugin.reset_tmux_bridge_info = function()
   vim.g.tmux_bridge_info = {}
   update_stored_pane(
     update_stored_window(
@@ -48,16 +56,12 @@ local function reset_tmux_bridge_info()
   end
 end
 
-local function run_test()
+Plugin.send = tmux.send
+
+Plugin.run_test = function()
   -- reset_tmux_bridge_info()
   local c = tmux.current_session()
   tmux.panes(c.session_name, c.window_index)
 end
 
-return {
-  run_test = run_test,
-  reset_tmux_bridge_info = reset_tmux_bridge_info,
-  updated_stored_session = update_stored_session,
-  updated_stored_window = update_stored_window,
-  updated_stored_pane = update_stored_pane,
-}
+return Plugin
