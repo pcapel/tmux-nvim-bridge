@@ -43,8 +43,8 @@ M.sessions = function()
 end
 
 -- need to sort out what type keys is
-M.send = function(keys)
-  vim.fn.system(string.format('tmux send-keys -t %s %s', tmux_target(), keys))
+M.send = function(target, keys)
+  vim.fn.system(string.format('tmux send-keys -t %s %s', target, keys))
 end
 
 return M

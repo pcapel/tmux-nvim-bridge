@@ -15,7 +15,7 @@ M.arr_line = function(string)
 end
 
 M.as_str_array = function(array)
-  element = '%q,'
+  local element = '%q,'
   local options = '['
   for i=1, #(array) do
     options = options .. string.format(element, array[i])
@@ -24,7 +24,7 @@ M.as_str_array = function(array)
 end
 
 M.replace = function(table, key, value)
-  new_table = {}
+  local new_table = {}
   for label, entry in pairs(table) do
     if label == key then
       new_table[label] = value
@@ -36,6 +36,12 @@ M.replace = function(table, key, value)
     new_table[key] = value
   end
   return new_table
+end
+
+M.pretty_print = function(...)
+  for i = 1, select('#', ...) do
+    print(vim.inspect(select(i, ...)))
+  end
 end
 
 return M

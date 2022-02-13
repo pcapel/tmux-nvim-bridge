@@ -3,7 +3,7 @@
 function! tmuxbridge#_inputWith(indicator, completions)
 	function! TmuxBridgeCompletionsProvider(argLead, cmdLine, cursorPos) abort closure
 		return luaeval(
-		\	'require("tmux-nvim-bridge").createCompletionsProvider(_A[1])(_A[2], _A[3], _A[4])',
+		\	'require("tmux-nvim-bridge/inputs").createCompletionsProvider(_A[1])(_A[2], _A[3], _A[4])',
 		\	[a:completions, a:argLead, a:cmdLine, a:cursorPos]
 		\)
 	endfunction

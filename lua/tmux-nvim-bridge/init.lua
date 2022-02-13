@@ -3,65 +3,33 @@
 -- of state? Is that why the yode source uses a weird redux analog?
 local utils = require('tmux-nvim-bridge.utils')
 local tmux = require('tmux-nvim-bridge.interactors')
-local pp = function(...)
-   for i = 1, select('#', ...) do
-        print(vim.inspect(select(i, ...)))
-    end
-end
+local inputs = require('tmux-nvim-bridge.inputs')
 
--- from:
--- https://github.com/Iron-E/nvim-libmodal/blob/afe38ffc20b8d28a5436d9b36bf9570e878d0d3a/lua/libmodal/src/Prompt.lua
-local function createCompletionsProvider(completions)
-  return function(argLead, cmdLine, _)
-    if string.len(cmdLine) < 1 then return completions
-    end
-
-    matches = {}
-    for _, completion in ipairs(completions) do
-      if string.find(completion, argLead) then
-        matches[#matches + 1] = completion
-      end
-    end
-    return matches
-  end
-end
-
-local function get_input_options(value_label, options)
-  local user_input = ''
-  while user_input == '' do
-    user_input = vim.fn['tmuxbridge#_inputWith'](value_label, options)
-  end
-  return user_input
-end
-
-local function get_session_name(names)
-  return get_input_options('session name: ', names)
-end
-
-local function get_window_name(names)
-  return get_input_options('window name: ', names)
+local function update_session(new_value)
+  vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'session', new_value)
 end
 
 local function update_stored_session()
   local session_names = tmux.sessions()
   if #(session_names) == 1 then
-    vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'session', session_names[1])
+    update_session(session_names[1])
   else
-    vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'session', get_session_name(session_names))
+    update_session(inputs.get_session_name(session_names))
   end
   return vim.g.tmux_bridge_info.session
 end
 
 local function update_stored_window(current_session)
   local window_names = tmux.windows(current_session)
+  local window = #(window_names) == 1 and window_names[1] or inputs.get_window_name(window_names)
+  local new_window = vim.fn.substitute(window, ":.*$", '', 'g')
 
-  local window = nil
-  if #(window_names) == 1 then
-    window = window_names[1]
-  else
-    window = get_window_name(window_names)
-  end
-  return vim.fn.substitute(window, ":.*$", '', 'g')
+  utils.replace(vim.g.tmux_bridge_info, 'window', new_window)
+
+  return vim.g.tmux_bridge_info.window
+end
+
+local function update_stored_pane()
 end
 
 local function reset_tmux_bridge_info()
@@ -88,5 +56,4 @@ return {
   updated_stored_session = update_stored_session,
   updated_stored_window = update_stored_window,
   updated_stored_pane = update_stored_pane,
-  createCompletionsProvider = createCompletionsProvider,
 }
