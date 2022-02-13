@@ -1,19 +1,5 @@
-local split = vim.fn.split
-local system = vim.fn.system
-
--- Utility function for chaining system calls with a pipeline operator
-local function pipeline(commands)
-  local full_command = commands[1]
-  for i=2, #(commands) do
-    full_command = full_command .. ' | ' .. commands[i]
-  end
-
-  return full_command
-end
-
-local function arr_line(s)
-  return split(s, '\n')
-end
+local utils = require('lua-slime.utils')
+local vfn = vim.fn
 
 -- returns a table with the values
 -- session_name: the current tmux session
@@ -27,7 +13,7 @@ local function active_target()
     'tr , "\n"',
   }
 
-  local result = arr_line(system(pipeline(CMD_ACTIVE_TARGET)))
+  local result = utils.arr_line(vfn.system(utils.pipeline(CMD_ACTIVE_TARGET)))
 
   return {
     session_name = result[1],
@@ -40,7 +26,7 @@ local function tmux_windows()
   if vim.g.tslime_always_current_window then
     return active_target.window_index
   else
-    return arr_line(system('tmux list-sessions -F "#{session_name}"'))
+    return utils.arr_line(vfn.system('tmux list-sessions -F "#{session_name}"'))
   end
 end
 
