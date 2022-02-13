@@ -1,5 +1,5 @@
 local utils = require('tmux-nvim-bridge.utils')
-local tmux = require('tmux-nvim-bridge.interactors')
+local tmux = require('tmux-nvim-bridge.tmux')
 local inputs = require('tmux-nvim-bridge.inputs')
 
 local function update_session(new_value)
@@ -42,9 +42,9 @@ local function reset_tmux_bridge_info()
 end
 
 local function run_test()
-  vim.g.tmux_bridge_info = {}
-  update_stored_session()
   -- reset_tmux_bridge_info()
+  local c = tmux.current_session()
+  tmux.panes(c.session_name, c.window_index)
 end
 
 return {
