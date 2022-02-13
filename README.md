@@ -1,6 +1,13 @@
 # Lua Slime
 Tslime, but ported to lua.
 
+## Goals
+The primary goal of this project is to learn how to develop a plugin in Lua.
+However, along the way I do think that it would be nice to improve the
+ergonomics of the slime interface.
+
+The first thing that comes to mind is exposing an easier way to switch up the
+target session/window/pane.
 
 ## tslime.vim
 This is a simple vim script to send portion of text from a vim buffer to a
