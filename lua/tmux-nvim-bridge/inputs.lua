@@ -1,6 +1,5 @@
 local inputs = {}
 
--- from:
 -- https://github.com/Iron-E/nvim-libmodal/blob/afe38ffc20b8d28a5436d9b36bf9570e878d0d3a/lua/libmodal/src/Prompt.lua
 inputs.createCompletionsProvider = function(completions)
   return function(argLead, cmdLine, _)
@@ -29,8 +28,12 @@ inputs.get_session_name = function(names)
   return get_input_options('session name: ', names)
 end
 
-inputs.get_window_name = function(names)
-  return get_input_options('window name: ', names)
+inputs.get_window_index = function(names)
+  return get_input_options('window index: ', names)
 end
 
-return M
+inputs.get_pane_index = function(names)
+  return get_input_options('pane index: ', names)
+end
+
+return inputs

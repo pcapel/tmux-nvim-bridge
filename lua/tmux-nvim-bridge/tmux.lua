@@ -42,14 +42,41 @@ tmux.windows = function(session)
   end
 end
 
+-- Filter the panes based on their height
+local function baseFilter(pane_heights)
+  local biggest_height = 0
+  local biggest_index = 0
+  for i=1, #pane_heights do
+    if pane_heights[i] > biggest_height then
+      biggest_height = pane_heights[i]
+      biggest_index = i
+    end
+  end
+  return {biggest_index}
+end
+
+local function filter_current(key, collection)
+  local current = tmux.current_session()
+
+  local filtered = {}
+  for _, item in ipairs(collection) do
+    if item ~= current[key] then
+      filtered[#filtered + 1] = item
+    end
+  end
+  return filtered
+end
+
+-- Pane filtering could be left up to a middle-ware
+-- though the base case of ignoring the active pane
+-- is probably always reasonable
 tmux.panes = function(session, window)
-  utils.pretty_print(session, window)
   local system_panes = utils.arr_line(
     vim.fn.system(
       string.format([[tmux list-panes -t "%s":%s -F '#{pane_index}']], session, window)
     )
   )
-  local current = tmux.current_session()
+  return filter_current('pane_index', system_panes)
 end
 
 -- Selects a pane automatically based on which one is the tallest.
@@ -62,9 +89,14 @@ tmux.auto_panes = function(session, window)
   --
 end
 
+tmux.target = function()
+  local info = v.g.tmux_bridge_info
+  return string.format('"%s":%s:%s', info.session, info.window, info.pane)
+end
+
 -- need to sort out what type keys is
-tmux.send = function(target, keys)
-  vim.fn.system(string.format('tmux send-keys -t %s %s', target, keys))
+tmux.send = function(keys)
+  vim.fn.system(string.format('tmux send-keys -t %s %s', tmux.target(), keys))
 end
 
 return tmux

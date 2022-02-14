@@ -10,3 +10,10 @@ function! tmuxbridge#_inputWith(indicator, completions)
 
 	return input(a:indicator, '', 'customlist,TmuxBridgeCompletionsProvider')
 endfunction
+
+function! Send_to_Tmux(R)
+  luaeval(
+        \	'require("tmux-nvim-bridge").send(_A)',
+        \	a:R
+        \)
+endfunction

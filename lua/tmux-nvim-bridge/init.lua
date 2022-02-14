@@ -1,3 +1,7 @@
+-- A really great addon would be if there was a way to have tmux highlight the
+-- panes... It doesn't look like there's a great way to do that without
+-- focusing on the pane itself. I would say that the usecase for this whole
+-- thing involves having at most three active panes, but what do I know?
 local utils = require('tmux-nvim-bridge.utils')
 local tmux = require('tmux-nvim-bridge.tmux')
 local inputs = require('tmux-nvim-bridge.inputs')
@@ -8,7 +12,9 @@ local Plugin = {}
 -- Is it better to introduce a way to pass them all around
 -- as arguments?
 -- I dunno
-local defaultConfig = {}
+local defaultConfig = {
+  
+}
 
 Plugin.setup = function(options)
   Plugin.config = vim.tbl_deep_extend('force', defaultConfig, options or {})
@@ -16,6 +22,10 @@ end
 
 local function update_session(new_value)
   vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'session', new_value)
+end
+
+local function update_pane(new_value)
+  vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'pane', new_value)
 end
 
 -- Exposed API
@@ -33,24 +43,28 @@ end
 
 Plugin.update_stored_window = function(current_session)
   local window_names = tmux.windows(current_session)
-  local window = #(window_names) == 1 and window_names[1] or inputs.get_window_name(window_names)
+  local window = #(window_names) == 1 and window_names[1] or inputs.get_window_index(window_names)
   local new_window = vim.fn.substitute(window, ":.*$", '', 'g')
 
-  utils.replace(vim.g.tmux_bridge_info, 'window', new_window)
+  vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'window', new_window)
 
   return vim.g.tmux_bridge_info.window
 end
 
-Plugin.update_stored_pane = function()
+Plugin.update_stored_pane = function(session, window)
+  local available_panes = tmux.panes(session, window)
+  if #(available_panes) == 1 then
+    update_pane(available_panes[1])
+  else
+    update_pane(inputs.get_pane_index(available_panes))
+  end
 end
 
 Plugin.reset_tmux_bridge_info = function()
   vim.g.tmux_bridge_info = {}
-  update_stored_pane(
-    update_stored_window(
-      update_stored_session()
-    )
-  )
+  local session = Plugin.update_stored_session()
+  local window = Plugin.update_stored_window(session)
+  local pane = Plugin.update_stored_pane(session, window)
   for key, value in pairs(vim.g.tmux_bridge_info) do
     print(key, value)
   end
@@ -59,9 +73,7 @@ end
 Plugin.send = tmux.send
 
 Plugin.run_test = function()
-  -- reset_tmux_bridge_info()
-  local c = tmux.current_session()
-  tmux.panes(c.session_name, c.window_index)
+  Plugin.reset_tmux_bridge_info()
 end
 
 return Plugin
