@@ -45,19 +45,8 @@ tmux.windows = function(session)
   end
 end
 
--- Filter the panes based on their height
-local function baseFilter(pane_heights)
-  local biggest_height = 0
-  local biggest_index = 0
-  for i=1, #pane_heights do
-    if pane_heights[i] > biggest_height then
-      biggest_height = pane_heights[i]
-      biggest_index = i
-    end
-  end
-  return {biggest_index}
-end
-
+-- This doesn't work for pane filtering when we're using the autofilter.
+-- Is there a way around that?
 local function filter_current(key, collection)
   local current = tmux.current_session()
 
@@ -70,26 +59,58 @@ local function filter_current(key, collection)
   return filtered
 end
 
+-- Selects a pane automatically based on which one is the tallest.
+-- I wonder if that heuristic could be configurable?
+tmux.auto_panes = function(session, window)
+  local current_pane_index = tmux.current_session().pane_index
+  local panes = {}
+  local pane_heights = utils.arr_line(
+    vim.fn.system(
+      string.format(
+        [[tmux list-panes -t "%s":%s -F '#{pane_index},#{pane_height}']],
+        session,
+        window
+      )
+    )
+  )
+  for _,height in ipairs(pane_heights) do
+    local split = vim.fn.split(height, ',')
+    panes[split[1]] = vim.fn.str2nr(split[2])
+  end
+
+  local selection = nil
+  if vim.g.autopane_function then
+    selection = vim.g.autopane_function(panes)
+  else
+    local biggest = 0
+    for pane_index, pane_height in pairs(panes) do
+      if pane_height > biggest and pane_index ~= current_pane_index then
+        biggest = pane_height
+        selection = pane_index
+      end
+    end
+  end
+  return {selection}
+end
+
 -- Pane filtering could be left up to a middle-ware
 -- though the base case of ignoring the active pane
 -- is probably always reasonable
 tmux.panes = function(session, window)
-  local system_panes = utils.arr_line(
+  if vim.g.tmux_bridge_autoset_pane then
+    return tmux.auto_panes(session, window)
+  else
+    local system_panes = utils.arr_line(
     vim.fn.system(
-      string.format([[tmux list-panes -t "%s":%s -F '#{pane_index}']], session, window)
+        string.format(
+          [[tmux list-panes -t "%s":%s -F '#{pane_index}']],
+          session,
+          window
+        )
+      )
     )
-  )
-  return filter_current('pane_index', system_panes)
-end
-
--- Selects a pane automatically based on which one is the tallest.
--- I wonder if that heuristic could be configurable?
-tmux.auto_panes = function(session, window)
-  local panes = {}
-  local pane_heights = utils.arr_line(vim.fn.system([[tmux list-panes -t "%s":%s -F '#{pane_height}']], session, window))
-  -- we get the valid panes, then we get the active pane and remove it
-  -- we don't consider the current pane as valid for sending
-  --
+    return filter_current('pane_index', system_panes)
+  end
 end
 
 tmux.target = function()

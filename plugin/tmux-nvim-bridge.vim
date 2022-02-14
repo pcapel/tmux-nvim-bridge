@@ -8,3 +8,4 @@ vnoremap <leader>f "ry :call TmuxBridge#_send_to_tmux(@r)<CR>
 
 let g:tmux_bridge_always_current_window = 1
 let g:tmux_bridge_always_current_session = 1
+let g:tmux_bridge_autoset_pane = 1
