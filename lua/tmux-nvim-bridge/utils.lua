@@ -1,6 +1,5 @@
 local utils = {}
 
--- Utility function for chaining system calls with a pipeline operator
 utils.pipeline = function(commands)
   local full_command = commands[1]
   for i=2, #(commands) do

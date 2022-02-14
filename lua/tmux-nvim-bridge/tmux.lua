@@ -118,7 +118,6 @@ tmux.target = function()
   return string.format('"%s":%s.%s', info.session, info.window, info.pane)
 end
 
--- need to sort out what type keys is
 tmux.send = function(keys)
   local target = tmux.target()
   vim.fn.system(string.format('tmux send-keys -t %s %s', target, keys))

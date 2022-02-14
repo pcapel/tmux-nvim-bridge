@@ -2,13 +2,6 @@ local utils = require('tmux-nvim-bridge.utils')
 local tmux = require('tmux-nvim-bridge.tmux')
 local inputs = require('tmux-nvim-bridge.inputs')
 
-local Plugin = {}
-local defaultConfig = {}
-
-Plugin.setup = function(options)
-  Plugin.config = vim.tbl_deep_extend('force', defaultConfig, options or {})
-end
-
 local function update_session(new_value)
   vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'session', new_value)
 end
@@ -17,9 +10,14 @@ local function update_pane(new_value)
   vim.g.tmux_bridge_info = utils.replace(vim.g.tmux_bridge_info, 'pane', new_value)
 end
 
--- Exposed API
+-- Plugin API
+local Plugin = {}
+local defaultConfig = {}
 
--- TODO: name this better
+Plugin.setup = function(options)
+  Plugin.config = vim.tbl_deep_extend('force', defaultConfig, options or {})
+end
+
 Plugin.update_stored_session = function()
   local session_names = tmux.sessions()
   if #(session_names) == 1 then
@@ -55,7 +53,7 @@ Plugin.reset_tmux_bridge_info = function()
   local session = Plugin.update_stored_session()
   local window = Plugin.update_stored_window(session)
   local pane = Plugin.update_stored_pane(session, window)
-  print(string.format('session: %s, window: %s, pane: %s', session, window, pane))
+  print(string.format('TmuxBridge session: %s, window: %s, pane: %s', session, window, pane))
 end
 
 Plugin.send = function(keys)
