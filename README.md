@@ -34,10 +34,10 @@ paste to pane 0 of the window.
 I would not have been able to build this out without the code written by the
 following awesome developers:
 
-https://github.com/Iron-E
-https://github.com/David-Kunz
-https://github.com/jgdavey
-https://github.com/hoschi
+- https://github.com/Iron-E
+- https://github.com/David-Kunz
+- https://github.com/jgdavey
+- https://github.com/hoschi
 
 ## TODO:
 - Wire up the configuration properly
