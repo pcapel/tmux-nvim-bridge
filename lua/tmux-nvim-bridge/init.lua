@@ -12,9 +12,7 @@ local Plugin = {}
 -- Is it better to introduce a way to pass them all around
 -- as arguments?
 -- I dunno
-local defaultConfig = {
-  
-}
+local defaultConfig = {}
 
 Plugin.setup = function(options)
   Plugin.config = vim.tbl_deep_extend('force', defaultConfig, options or {})
@@ -58,6 +56,7 @@ Plugin.update_stored_pane = function(session, window)
   else
     update_pane(inputs.get_pane_index(available_panes))
   end
+  return vim.g.tmux_bridge_info.pane
 end
 
 Plugin.reset_tmux_bridge_info = function()
@@ -65,12 +64,15 @@ Plugin.reset_tmux_bridge_info = function()
   local session = Plugin.update_stored_session()
   local window = Plugin.update_stored_window(session)
   local pane = Plugin.update_stored_pane(session, window)
-  for key, value in pairs(vim.g.tmux_bridge_info) do
-    print(key, value)
-  end
+  print(string.format('session: %s, window: %s, pane: %s', session, window, pane))
 end
 
-Plugin.send = tmux.send
+Plugin.send = function(keys)
+  if vim.g.tmux_bridge_info == nil then
+    Plugin.reset_tmux_bridge_info()
+  end
+  tmux.send(keys)
+end
 
 Plugin.run_test = function()
   Plugin.reset_tmux_bridge_info()

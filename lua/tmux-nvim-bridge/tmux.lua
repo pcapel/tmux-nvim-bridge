@@ -27,7 +27,7 @@ end
 
 tmux.sessions = function()
   if vim.g.tmux_bridge_always_current_session then
-    return tmux.current_session().session_name
+    return {tmux.current_session().session_name}
   else
     return utils.arr_line(vim.fn.system('tmux list-sessions -F "#{session_name}"'))
   end
@@ -36,7 +36,7 @@ end
 -- Get the windows for a given session
 tmux.windows = function(session)
   if vim.g.tmux_bridge_always_current_window then
-    return tmux.current_session().window_index
+    return {tmux.current_session().window_index}
   else
     return utils.arr_line(vim.fn.system(string.format('tmux list-windows -F "#{window_index}" -t %s', session)))
   end
@@ -90,13 +90,14 @@ tmux.auto_panes = function(session, window)
 end
 
 tmux.target = function()
-  local info = v.g.tmux_bridge_info
-  return string.format('"%s":%s:%s', info.session, info.window, info.pane)
+  local info = vim.g.tmux_bridge_info
+  return string.format('"%s":%s.%s', info.session, info.window, info.pane)
 end
 
 -- need to sort out what type keys is
 tmux.send = function(keys)
-  vim.fn.system(string.format('tmux send-keys -t %s %s', tmux.target(), keys))
+  local target = tmux.target()
+  vim.fn.system(string.format('tmux send-keys -t %s %s', target, keys))
 end
 
 return tmux
