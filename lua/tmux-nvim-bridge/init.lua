@@ -1,17 +1,8 @@
--- A really great addon would be if there was a way to have tmux highlight the
--- panes... It doesn't look like there's a great way to do that without
--- focusing on the pane itself. I would say that the usecase for this whole
--- thing involves having at most three active panes, but what do I know?
 local utils = require('tmux-nvim-bridge.utils')
 local tmux = require('tmux-nvim-bridge.tmux')
 local inputs = require('tmux-nvim-bridge.inputs')
 
 local Plugin = {}
--- TODO: Figure out how the configuration should work.
--- Do you just set those values up on the global scope?
--- Is it better to introduce a way to pass them all around
--- as arguments?
--- I dunno
 local defaultConfig = {}
 
 Plugin.setup = function(options)

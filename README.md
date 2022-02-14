@@ -3,16 +3,20 @@ This is just tslime.vim, but ported to lua.
 
 ## Goals
 The primary goal of this project is to learn how to develop a plugin in Lua.
-However, along the way I do think that it would be nice to improve the
-ergonomics of the slime interface.
+Having tried to work with Vimscript, I found it really clunky. I prefer the
+explicit requires of lua, as well as the lower verbosity of the language.
 
-The first thing that comes to mind is exposing an easier way to switch up the
-target session/window/pane. While we _can_ reset them the way the code is
-originally written, you have to reset all of them. So if you just want to
-target a new pane or something, you're stuck reiterating the info you already
-put in. If that's a part of your workflow, it's not nice. I'd like a way to
-expose just changing each individual element.
+There are some very rough corners still, since you also need to use Vimscript
+defined functions in certain scenarios. This is especially apparent with the
+function passed to `customlist` for user inputs. I found an excellent approach
+from Iron-E's `libmodal` project. That was a super helpful pattern.
 
+# Examples
+
+# Use
+## Configuration
+
+# Old Readme
 ## tslime.vim
 This is a simple vim script to send portion of text from a vim buffer to a
 running tmux session.
@@ -34,3 +38,8 @@ https://github.com/Iron-E
 https://github.com/David-Kunz
 https://github.com/jgdavey
 https://github.com/hoschi
+
+## TODO:
+- Wire up the configuration properly
+- Figure out how to e2e test with an actual tmux instance
+  Maybe a headless terminal? Is there such a thing?
