@@ -123,4 +123,9 @@ tmux.send = function(keys)
   vim.fn.system(string.format('tmux send-keys -t %s %s', target, keys))
 end
 
+tmux.send_with_return = function(keys)
+  local target = tmux.target()
+  vim.fn.system(string.format('tmux send-keys -t %s %s Enter', target, keys))
+end
+
 return tmux
