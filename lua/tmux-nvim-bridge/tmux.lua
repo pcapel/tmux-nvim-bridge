@@ -25,6 +25,8 @@ tmux.current_session = function()
   }
 end
 
+-- Returns a table with
+-- { session_name } as strings
 tmux.sessions = function()
   if vim.g.tmux_bridge_always_current_session then
     return {tmux.current_session().session_name}
@@ -33,7 +35,8 @@ tmux.sessions = function()
   end
 end
 
--- Get the windows for a given session
+-- Returns a table with
+-- { window_index } as strings
 tmux.windows = function(session)
   if vim.g.tmux_bridge_always_current_window then
     return {tmux.current_session().window_index}

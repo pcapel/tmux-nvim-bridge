@@ -71,7 +71,7 @@ Plugin.send = function(keys)
   if vim.g.tmux_bridge_info == nil then
     Plugin.reset_tmux_bridge_info()
   end
-  tmux.send(keys)
+  tmux.send(string.format('"%s"', vim.fn.escape(keys, '\"$')))
 end
 
 Plugin.run_test = function()
